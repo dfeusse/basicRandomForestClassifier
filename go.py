@@ -1,6 +1,7 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.cross_validation import train_test_split
 import pandas as pd
+import numpy as np
 
 # header=0 indicates first row has headers
 data = pd.read_csv('data/worthlaylayless/maleFemaleTrain.csv')
@@ -42,7 +43,21 @@ merge_DF_headers = ['Weight', 'Height', 'Leg_Length', 'Arm_Length', 'Arm_Circum'
 merge_DF = pd.DataFrame(X_test, columns=merge_DF_headers)
 
 # combine both DataFrames
-final_DF = pd.concat([results_DF, merge_DF])
+final_DF = pd.concat([results_DF, merge_DF], axis=1)
 print final_DF
 
+# create new column, put '1' if correct, '0' if not
+# can then do sum(column) / len(column) = % percentage correct
+final_DF['correct'] = np.where(final_DF['actualGender']==final_DF['myResultsGender'], 1, 0)
+print final_DF
+
+# PERCENT CORRECT ------------------------------
+print '----------------------------------------'
+
+print str(( float(sum(final_DF['correct'])) / float(len(final_DF['correct'])) ) * 100) + '%'
+
+# ----------------------------------------------
+print '----------------------------------------'
+
 # export to csv
+final_DF.to_csv('final_output.csv')
